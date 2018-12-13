@@ -32,26 +32,41 @@ module.exports = {
     },
 
 
-    inpst: function () {
+    inpst: function (selectQuestion, result) {
         return new Promise((resolve, reject) => {
-            rl.question ("Добавление нового сотрудника. \nФамилия: ", async (answer) => {
-                if (answer.toString().trim() === "") {
-                    console.log("Поле не может быть пустым!");
-                    resolve (await this.inpst());
-                    return;
-                    }
-                    else rl.question ("Имя: ", async (answer2) => {
-                        if (answer2.toString().trim() === "") {
+            if(!selectQuestion) {
+                selectQuestion = 1;
+                console.log("Добавление нового сотрудника. \n");
+            }
+            switch (selectQuestion) {
+                case 1:
+                    rl.question ("Фамилия: ", async (answer) => {
+                        if (answer.toString().trim() === "") {
                             console.log("Поле не может быть пустым!");
-                            resolve (await this.inpst());
+                            resolve(await this.inpst(1));
                             return;
                         }
-                         else rl.question ("Отчество: ", async (answer3) => {
-                             let get_div = await this.get_div();
-                             resolve ([answer, answer2, answer3, get_div]);
-                         });
+                        resolve(await this.inpst(2, {last_name: answer}));
                     });
-                });
+                    break;
+                case 2:
+                    rl.question ("Имя: ", async (answer2) => {
+                        if (answer2.toString().trim() === "") {
+                            console.log("Поле не может быть пустым!");
+                            resolve(await this.inpst(2, {last_name: result.last_name}));
+                            return;
+                        }
+                        resolve(await this.inpst(3, {last_name: result.last_name, first_name: answer2}));
+                    });
+                    break
+                case 3:
+                    rl.question ("Отчество: ", async (answer3) => {
+                        let get_div = await this.get_div();
+                        resolve ([result.last_name, result.first_name, answer3, get_div]);
+                    });
+                    break
+            }
+
         })
    },
    edit_st: function (get_change_staff_obj) {

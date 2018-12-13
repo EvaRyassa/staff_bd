@@ -55,7 +55,7 @@ async function request () {
             case "adst": {
                 let [last_name, first_name, middle_name, division_id] = await (input_fn.inpst());
                 console.log(answer);
-                let result = await sqlMetods.staff_bd(`
+                await sqlMetods.staff_bd(`
                 INSERT INTO staff (last_name, first_name, middle_name, division_id)
                 VALUES ('${last_name}', '${first_name}', '${middle_name}', '${division_id}')`);
                 console.log("Сотрудник добавлен!");
@@ -65,15 +65,15 @@ async function request () {
             case "editdiv": {
                 await input_fn.get_div().then(async (division_id) => {
                     await input_fn.edit_div().then(async (new_div_name) => {
-                        let result = await sqlMetods.staff_bd(`
-                    UPDATE divisions SET div_name = '${new_div_name}'
-                    WHERE id = '${division_id}'`);
+                        await sqlMetods.staff_bd(`
+                        UPDATE divisions SET div_name = '${new_div_name}'
+                        WHERE id = '${division_id}'`);
                         console.log("Название подразделения изменено!");
                         request();
-                    }).catch(res => {
+                    }).catch(() => {
                         request();
                     })
-                }).catch(res => {
+                }).catch(() => {
                     request();
                 });
 
@@ -82,7 +82,7 @@ async function request () {
             case "editst": {
                 await input_fn.get_staff().then(async (staff_id) => {
                     await input_fn.edit_st().then(async (change_params) => {
-                        let result = await sqlMetods.staff_bd(`UPDATE staff SET ${
+                        await sqlMetods.staff_bd(`UPDATE staff SET ${
                             Object.keys(change_params).map((column_name) => {
                                 return `${column_name}="${change_params[column_name]}"`
                             }).join(', ')
@@ -92,7 +92,7 @@ async function request () {
                     }).catch(res => {
                         request();
                     });
-                }).catch( res => {
+                }).catch( () => {
                     request();
                 })
                 return;
@@ -100,16 +100,16 @@ async function request () {
             case "deldiv": {
                 await input_fn.get_div().then(async (division_id) => {
                     await input_fn.del_div(division_id).then(async () => {
-                        let result = await sqlMetods.staff_bd(`
-                            DELETE
-                            FROM divisions
-                            WHERE divisions.id = ${division_id}`);
+                        await sqlMetods.staff_bd(`
+                        DELETE
+                        FROM divisions
+                        WHERE divisions.id = ${division_id}`);
                         console.log("Подразделение удалено!");
                         request();
-                    }).catch(res => {
+                    }).catch(() => {
                         request();
                     });
-                }).catch(res => {
+                }).catch(() => {
                     request();
                 });
 
@@ -124,10 +124,10 @@ async function request () {
                     WHERE staff.id = ${staff_id}`);
                         console.log("Сотрудник удален!");
                         request();
-                    }).catch(res => {
+                    }).catch(() => {
                         request();
                     })
-                }).catch(res => {
+                }).catch(() => {
                     request();
                 });
                 return;
